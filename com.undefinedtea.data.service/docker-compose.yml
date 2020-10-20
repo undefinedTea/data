@@ -10,7 +10,7 @@ volumes:
 
 services:
   datastore:
-    image: postgress:latest
+    image: postgres:latest
     container_name: datastore
     restart: always
 
