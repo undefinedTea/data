@@ -14,9 +14,6 @@ services:
     container_name: datastore
     restart: always
 
-    env_file:
-      - ./.env
-
     networks:
       - data
 
@@ -38,9 +35,6 @@ services:
     image: nextcloud:latest
     container_name: data
     restart: always
-
-    env_file:
-      - ./.env
 
     depends_on:
       - cache
