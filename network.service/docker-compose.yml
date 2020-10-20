@@ -1,0 +1,45 @@
+version: '3.3'
+
+volumes:
+  certificate:
+    driver: local
+
+services:
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    restart: always
+
+    env_file:
+      - ./.env
+
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.network=traefik"
+      - "--providers.docker.exposedbydefault=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--certificatesresolvers.tmp.acme.httpchallenge=true"
+      - "--certificatesresolvers.tmp.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.tmp.acme.email=hello@undefinedtea.dev"
+      - "--certificatesresolvers.tmp.acme.storage=/certificate/acme.json"
+
+    ports:
+      - 80:80
+      - 443:443
+
+    networks:
+      - default
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - certificate:/certificate
+
+networks:
+  default:
+    external:
+      name: traefik

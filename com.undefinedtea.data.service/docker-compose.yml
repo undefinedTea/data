@@ -1,0 +1,72 @@
+version: '3.3'
+
+volumes:
+  service:
+    driver: local
+  datastore:
+    driver: local
+  cache:
+    driver: local
+
+services:
+  datastore:
+    image: postgress:latest
+    container_name: datastore
+    restart: always
+
+    env_file:
+      - ./.env
+
+    networks:
+      - data
+
+    volumes:
+      - datastore:/var/lib/postgresql/data
+
+  cache:
+    image: redis:latest
+    container_name: cache
+    restart: always
+
+    networks:
+      - data
+
+    volumes:
+      - cache:/var/lib/redis
+
+  service:
+    image: nextcloud:latest
+    container_name: data
+    restart: always
+
+    env_file:
+      - ./.env
+
+    depends_on:
+      - cache
+      - datastore
+
+    labels:
+      - traefik.http.routers.service.middlewares=service,service_redirect
+      - traefik.http.routers.service.tls.certresolver=certificate
+      - traefik.http.routers.service.rule=Host(`data.undefinedtea.com`)
+      - traefik.http.middlewares.service.headers.stsSeconds=155520011
+      - traefik.http.middlewares.service.headers.stsIncludeSubdomains=true
+      - traefik.http.middlewares.service.headers.stsPreload=true
+      - traefik.http.middlewares.service_redirect.redirectregex.regex=/.well-known/(card|cal)dav
+      - traefik.http.middlewares.service_redirect.redirectregex.replacement=/remote.php/dav/
+
+    networks:
+      - default
+      - data
+
+    volumes:
+      - service:/var/www/html
+
+networks:
+  default:
+    external:
+      name: traefik
+
+  data:
+    internal: true
