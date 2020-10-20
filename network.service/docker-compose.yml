@@ -10,6 +10,9 @@ services:
     container_name: traefik
     restart: always
 
+    env_file:
+      - /data/environment/.env
+
     command:
       - "--log.level=DEBUG"
       - "--api.insecure=true"
