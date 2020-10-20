@@ -48,7 +48,7 @@ services:
 
     labels:
       - traefik.http.routers.service.middlewares=service,service_redirect
-      - traefik.http.routers.service.tls.certresolver=certificate
+      - traefik.http.routers.service.tls.certresolver=tmp
       - traefik.http.routers.service.rule=Host(`data.undefinedtea.com`)
       - traefik.http.middlewares.service.headers.stsSeconds=155520011
       - traefik.http.middlewares.service.headers.stsIncludeSubdomains=true
