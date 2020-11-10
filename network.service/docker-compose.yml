@@ -6,7 +6,7 @@ volumes:
 
 services:
   traefik:
-    image: traefik:latest
+    image: traefik:2.3
     container_name: traefik
     restart: always
 
@@ -19,7 +19,7 @@ services:
       - "--pilot.token=${PILOT}"
       - "--providers.docker=true"
       - "--providers.docker.network=traefik"
-      - "--providers.docker.exposedbydefault=true"
+      - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
@@ -30,11 +30,11 @@ services:
       - "--certificatesresolvers.tmp.acme.storage=/certificate/acme.json"
 
     labels:
+      - traefik.enable=true
       - traefik.http.routers.traefik.rule=Host(`api-pilot.undefinedtea.com`)
       - traefik.http.routers.traefik.service=api@internal
       - traefik.http.routers.traefik.middlewares=api
       - traefik.http.routers.traefik.tls.certresolver=tmp
-      - traefik.http.routers.traefik.entrypoints=websecure
       - traefik.http.middlewares.api.basicauth.users=${API}:${API_}
 
     ports:
