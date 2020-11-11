@@ -1,0 +1,168 @@
+version: '3.3'
+
+volumes:
+  git:
+    driver: local
+  git-log:
+    driver: local
+  git-env:
+    driver: local
+  docker:
+    driver: local
+  git-datastore:
+    driver: local
+  git-cache:
+    driver: local
+
+services:
+  datastore:
+    image: postgres:13.0-alpine
+    container_name: git.datastore
+    restart: always
+
+    env_file:
+      - /data/environment/.env
+
+    networks:
+      - git
+
+    volumes:
+      - git-datastore:/var/lib/postgresql/data
+
+  cache:
+    image: redis:6.0.9-alpine
+    container_name: git.cache
+    restart: always
+
+    networks:
+      - data
+
+    volumes:
+      - git-cache:/var/lib/redis
+
+  git:
+    image: 'gitlab/gitlab-ce:latest'
+    container_name: git
+    restart: always
+
+    hostname: 'git.undefinedtea.com'
+
+    env_file:
+      - /data/environment/.env
+
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://git.undefinedtea.com'
+
+        gitlab_rails['gitlab_ssh_host'] = "git.undefinedtea.com"
+        gitlab_rails['time_zone'] = 'Europe/Helsinki'
+
+        letsencrypt['enable'] = false
+
+        nginx['listen_port'] = 443
+        nginx['listen_https'] = false
+        nginx['proxy_set_headers'] = {
+          'X-Forwarded-Proto' => 'https',
+          'X-Forwarded-Ssl' => 'on',
+          'Host' => 'git.undefinedtea.com'
+        }
+
+        # datastore
+        gitlab_rails['db_adapter'] = "postgresql"
+        gitlab_rails['db_database'] = "${GIT_POSTGRES_DB}"
+        gitlab_rails['db_host'] = "${GIT_POSTGRES_HOST}"
+        gitlab_rails['db_username'] = "${GIT_POSTGRES_USER}"
+        gitlab_rails['db_password'] = "${GIT_POSTGRES_PASSWORD}"
+
+        gitlab_rails['db_encoding'] = "utf8"
+
+        postgres_exporter['env']['DATA_SOURCE_NAME'] = "user=${GIT_POSTGRES_USER} password=${GIT_POSTGRES_PASSWORD} host=${GIT_POSTGRES_HOST} database=${GIT_POSTGRES_DB} sslmode=disable"
+        postgres_exporter['password'] = "${GIT_POSTGRES_PASSWORD}"
+
+        # mail
+        gitlab_rails['smtp_enable'] = true
+        gitlab_rails['smtp_address'] = "${GIT_MAIL_HOST}"
+        gitlab_rails['smtp_port'] = 587
+
+        gitlab_rails['smtp_user_name'] = "${GIT_MAIL_USER}"
+        gitlab_rails['smtp_password'] = "${GIT_MAIL_PASSWORD}"
+
+        gitlab_rails['smtp_domain'] = "${GIT_MAIL_HOST}"
+        gitlab_rails['smtp_authentication'] = "login"
+
+        gitlab_rails['smtp_enable_starttls_auto'] = true
+
+        gitlab_rails['smtp_tls'] = false
+
+        gitlab_rails['gitlab_email_from'] = "${GIT_MAIL_USER}"
+        gitlab_rails['gitlab_email_reply_to'] = "${GIT_MAIL_USER}"
+
+        # cache
+        redis['enable'] = false
+
+        gitlab_rails['redis_host'] = 'git.cache'
+        gitlab_rails['redis_port'] = '6379'
+
+        # docker
+        registry_external_url 'https://docker.git.undefinedtea.com'
+        gitlab_rails['registry_enabled'] = true
+        gitlab_rails['api_url'] = 'https://docker.git.undefinedtea.com'
+        registry['enable'] = true
+
+        registry_nginx['enable'] = false
+
+    ports:
+      - '22:22'
+
+    depends_on:
+      - datastore
+      - cahce
+
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.git.tls.certresolver=tmp
+      - traefik.http.routers.git.rule=Host(`git.undefinedtea.com`)
+      - traefik.http.routers.git.service=git
+
+    networks:
+      - default
+      - git
+
+    volumes:
+      - git-env:/etc/gitlab
+      - git-log:/var/log/gitlab
+      - git:/var/opt/gitlab
+
+  docker:
+    image: registry:2.7.1
+    container_name: git.docker
+    restart: always
+
+    env_file:
+      - /data/environment/.env
+
+    depends_on:
+      - datastore
+      - cache
+      - git
+
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.docker.tls.certresolver=tmp
+      - traefik.http.routers.docker.rule=Host(`docker.git.undefinedtea.com`)
+      - traefik.http.routers.docker.service=docker.git
+
+    networks:
+      - default
+      - git
+
+    volumes:
+      - docker:/registry
+
+networks:
+  default:
+    external:
+      name: traefik
+
+  git:
+    internal: true

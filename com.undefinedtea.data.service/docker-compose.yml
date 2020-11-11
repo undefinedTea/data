@@ -11,7 +11,7 @@ volumes:
 services:
   datastore:
     image: postgres:13.0-alpine
-    container_name: datastore
+    container_name: data.datastore
     restart: always
 
     env_file:
@@ -25,7 +25,7 @@ services:
 
   cache:
     image: redis:6.0.9-alpine
-    container_name: cache
+    container_name: data.cache
     restart: always
 
     networks:
@@ -38,6 +38,8 @@ services:
     image: nextcloud:20.0.1
     container_name: data
     restart: always
+
+    hostname: 'data.undefinedtea.com'
 
     env_file:
       - /data/environment/.env
