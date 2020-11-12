@@ -1,4 +1,4 @@
-#self hosted data
+#self hosted data/git
 
 nextcloud with postgress, redis and traefik via docker. oh yes please.
 
@@ -75,9 +75,11 @@ then initialise and ammend `.env` and `com.undefinedtea.data.service/cache` acco
 ```shell
 # edit .env
 $ cp e.env .env
+$ cp e.git.env .git.env
 
 #edit com.undefinedtea.data.service/cache
 $ cp com.undefinedtea.data.service/e.cache com.undefinedtea.data.service/cache
+$ cp com.undefinedtea.git.service/e.cache com.undefinedtea.git.service/cache
 ```
 
 ### create network interface
