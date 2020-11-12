@@ -62,6 +62,7 @@ services:
 
         letsencrypt['enable'] = false
 
+        nginx['redirect_http_to_https'] = true
         nginx['listen_port'] = 80
         nginx['listen_https'] = false
         nginx['proxy_set_headers'] = {
@@ -127,6 +128,7 @@ services:
       - traefik.http.routers.git.tls.certresolver=tmp
       - traefik.http.routers.git.rule=Host(`git.undefinedtea.com`)
       - traefik.http.routers.git.service=git
+      - traefik.http.routers.git.entrypoints=https
 
     networks:
       - default
@@ -155,6 +157,7 @@ services:
       - traefik.http.routers.docker.tls.certresolver=tmp
       - traefik.http.routers.docker.rule=Host(`docker.git.undefinedtea.com`)
       - traefik.http.routers.docker.service=docker.git
+      - traefik.http.routers.docker.entrypoints=https
 
     networks:
       - default
