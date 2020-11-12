@@ -59,7 +59,7 @@ services:
 
         letsencrypt['enable'] = false
 
-        nginx['listen_port'] = 443
+        nginx['listen_port'] = 80
         nginx['listen_https'] = false
         nginx['proxy_set_headers'] = {
           'X-Forwarded-Proto' => 'https',
