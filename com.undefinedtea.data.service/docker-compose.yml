@@ -28,6 +28,8 @@ services:
     container_name: data.cache
     restart: always
 
+    command: redis-server /usr/local/etc/redis/redis.conf
+
     networks:
       - data
 
