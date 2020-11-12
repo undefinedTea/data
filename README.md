@@ -1,6 +1,6 @@
 #self hosted data/git
 
-nextcloud with postgress, redis and traefik via docker. oh yes please.
+nextcloud and gitlab with postgress, redis and traefik via docker. oh yes please.
 
 ### pre-requisite
 ```shell
@@ -104,7 +104,7 @@ $ docker-compose --file com.undefinedtea.git.service/docker-compose.yml up --det
 
 ### verify
 ```shell
-$ docker pa --all
+$ docker ps --all
 ```
 
 ### redis
