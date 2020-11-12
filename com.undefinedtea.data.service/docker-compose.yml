@@ -33,6 +33,7 @@ services:
 
     volumes:
       - cache:/var/lib/redis
+      - ./cache:/usr/local/etc/redis/redis.conf
 
   service:
     image: nextcloud:20.0.1
