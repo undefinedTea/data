@@ -37,7 +37,7 @@ services:
     command: redis-server /usr/local/etc/redis/redis.conf
 
     networks:
-      - data
+      - git
 
     volumes:
       - git-cache:/var/lib/redis
