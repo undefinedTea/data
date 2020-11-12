@@ -157,7 +157,9 @@ services:
       - traefik.enable=true
       - traefik.http.routers.docker.tls.certresolver=tmp
       - traefik.http.routers.docker.rule=Host(`docker.git.undefinedtea.com`)
-      - traefik.http.routers.docker.service=docker.git
+      - traefik.http.routers.docker.service=docker
+      - traefik.http.services.docker.loadbalancer.server.port=5000
+      - traefik.http.services.docker.loadbalancer.server.scheme=http
 
     networks:
       - default
