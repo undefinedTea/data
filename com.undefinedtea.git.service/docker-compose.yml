@@ -128,7 +128,8 @@ services:
       - traefik.http.routers.git.tls.certresolver=tmp
       - traefik.http.routers.git.rule=Host(`git.undefinedtea.com`)
       - traefik.http.routers.git.service=git
-      - traefik.http.routers.git.entrypoints=websecure
+      - traefik.http.services.git.loadbalancer.server.port=80
+      - traefik.http.services.git.loadbalancer.server.scheme=http
 
     networks:
       - default
@@ -157,7 +158,6 @@ services:
       - traefik.http.routers.docker.tls.certresolver=tmp
       - traefik.http.routers.docker.rule=Host(`docker.git.undefinedtea.com`)
       - traefik.http.routers.docker.service=docker.git
-      - traefik.http.routers.docker.entrypoints=websecure
 
     networks:
       - default
