@@ -99,7 +99,7 @@ $ docker network inspect traefik
 ```shell
 $ docker-compose --file network.service/docker-compose.yml up --detach
 $ docker-compose --file com.undefinedtea.data.service/docker-compose.yml up --detach
-$ docker-compose --file com.undefinedtea.git.service/docker-compose.yml up --detach
+$ docker-compose --env-file .git.env --file com.undefinedtea.git.service/docker-compose.yml up --detach
 ```
 
 ### verify

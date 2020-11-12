@@ -120,7 +120,7 @@ services:
 
     depends_on:
       - datastore
-      - cahce
+      - cache
 
     labels:
       - traefik.enable=true
