@@ -127,7 +127,7 @@ services:
       - traefik.http.routers.git.service=git
       - traefik.http.services.git.loadbalancer.server.port=80
       - traefik.http.services.git.loadbalancer.server.scheme=http
-      - traefik.tcp.routers.git-ssh.rule=Host(`git.undefinedtea.com`)
+      - traefik.tcp.routers.git-ssh.rule=HostSNI(`*`)
       - traefik.tcp.routers.git-ssh.entrypoints=ssh
       - traefik.tcp.routers.git-ssh.service=git-ssh
       - traefik.tcp.services.git-ssh.loadbalancer.server.port=22
