@@ -1,3 +1,6 @@
 .*
+
 .env
+
 com.undefinedtea.data.service/cache
+com.undefinedtea.git.service/cache
