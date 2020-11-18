@@ -5,7 +5,7 @@ volumes:
     driver: local
 
 services:
-  datastore:
+  file:
     image: minio/minio:edge
     container_name: file
     restart: always

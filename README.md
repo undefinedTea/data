@@ -120,8 +120,8 @@ $ docker ps --all
 ### redis
 if you want to flush the cache, the following command will achieve that.
 ```shell
-$ docker exec -it cache redis-cli FLUSHALL
-$ docker exec -it git-cache redis-cli FLUSHALL
+$ docker exec -it cache redis-cli -a password FLUSHALL
+$ docker exec -it git-cache redis-cli -a password FLUSHALL
 ```
 
 
