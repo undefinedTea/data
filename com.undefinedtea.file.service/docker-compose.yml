@@ -1,0 +1,34 @@
+version: '3.3'
+
+volumes:
+  file:
+    driver: local
+
+services:
+  datastore:
+    image: minio/minio:edge
+    container_name: file
+    restart: always
+
+    command: server /data --quiet
+
+    hostname: 'file.undefinedtea.com'
+
+    env_file:
+      - /data/environment/.file.env
+
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.file.tls.certresolver=tmp
+      - traefik.http.routers.file.rule=Host(`file.undefinedtea.com`)
+
+    networks:
+      - default
+
+    volumes:
+      - file:/data
+
+networks:
+  default:
+    external:
+      name: traefik

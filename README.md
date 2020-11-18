@@ -1,6 +1,6 @@
 #self hosted data/git
 
-nextcloud and gitlab with postgress, redis and traefik via docker. oh yes please.
+nextcloud and gitlab with postgress, redis and traefik via docker. oh yes please. also object storage via minio.
 
 ### pre-requisite
 ```shell
@@ -69,13 +69,22 @@ labels:
   # [...]
 ```
 
-any instance of `data.undefinedtea.com`, `git.undefinedtea.com` and `docker.git.undefinedtea.com` should be replaced with your domain.
+in `com.undefinedtea.file.service/docker-compose.yml` make sure the following `label` values reflect your enviornment.
+```yml
+labels:
+  # [...]
+  - traefik.http.routers.file.rule=Host(`file.undefinedtea.com`)
+  # [...]
+```
+
+any instance of `data.undefinedtea.com`, `git.undefinedtea.com`, `docker.git.undefinedtea.com` and `git.undefinedtea.com` should be replaced with your domain.
 
 then initialise and ammend `.env` and `com.undefinedtea.data.service/cache` according to your environment. note that [pilot][1] integration and it's coresponging `PILOT` value in the `.env` file are optional. again, make sure to replace _every_ value in these files. password is not a secure password. seriously. replace _every_ value.
 ```shell
 # edit .env
 $ cp e.env .env
 $ cp e.git.env .git.env
+$ cp e.file.env .file.env
 
 #edit com.undefinedtea.data.service/cache
 $ cp com.undefinedtea.data.service/e.cache com.undefinedtea.data.service/cache
@@ -100,6 +109,7 @@ $ docker network inspect traefik
 $ docker-compose --file network.service/docker-compose.yml up --detach
 $ docker-compose --file com.undefinedtea.data.service/docker-compose.yml up --detach
 $ docker-compose --env-file .git.env --file com.undefinedtea.git.service/docker-compose.yml up --detach
+$ docker-compose --env-file .file.env --file com.undefinedtea.file.service/docker-compose.yml up --detach
 ```
 
 ### verify
